@@ -7,6 +7,15 @@ class Processor {
 
   // TODO: Declare any necessary private members
  private:
+  float idle;
+  float iowait;
+  float user;
+  float nice;
+  float system;
+  float irq;
+  float softirq;
+  float steal;
+  
 };
 
 #endif
