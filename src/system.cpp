@@ -27,7 +27,7 @@ vector<Process>& System::Processes() {
         Process p;
         p.Pid_ = Pid;
         p.Uid_ = LinuxParser::Uid(Pid);
-        processes_.push_back(p);
+        processes_.emplace_back(p);
     }
 
     sort(processes_.begin(), processes_.end());

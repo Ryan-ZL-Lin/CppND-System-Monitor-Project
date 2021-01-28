@@ -70,8 +70,8 @@ vector<int> LinuxParser::Pids() {
 // TODO: Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() {
   string line;
-  string key;
-  float value, MemTotal, MemFree;
+  string key, value;
+  float MemTotal, MemFree;
   string unit;
 
   std::ifstream filestream(kProcDirectory + kMeminfoFilename);
@@ -81,10 +81,10 @@ float LinuxParser::MemoryUtilization() {
       std::istringstream linestream(line);
       while (linestream >> key >> value >> unit) {
         if (key == "MemTotal") {
-          MemTotal = value;
+          MemTotal = std::stof(value);
         }
         else if(key == "MemFree"){
-          MemFree = value;
+          MemFree = std::stof(value);
         }
       }
     }
@@ -112,7 +112,7 @@ long LinuxParser::Jiffies() { return 0; }
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+//long LinuxParser::ActiveJiffies(int pid) { return 0; }
 
 // TODO: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() { return 0; }
@@ -311,27 +311,21 @@ string LinuxParser::User(int pid) {
 // REMOVE: [[maybe_unused]] once you define the function
 long int LinuxParser::UpTime(int pid) {
   long int res;
-  float Hertz = sysconf(_SC_CLK_TCK);
-  string _pid, comm, state, ppid, pgrp, session, tty_nr, tpgid, flags, minflt, cminflt, \
-         majflt, cmajflt, utime, stime, cutime, cstime, priority, nice, num_threads, itrealvalue, \
-         starttime, vsize, rss, rsslim, startcode, endcode, startstack, kstkesp, kstkeip, signal, \
-         blocked, sigignore, sigcatch, wchain, nswap, cnswap, exit_signal, processor, rt_priority, \
-         policy, delayacct_blkio_ticks, guest_time, cguest_time, start_data, end_data, start_brk, \
-         arg_start, arg_end, env_start, env_end, exit_code;
+  string token;
   string line;
   std::ifstream stream(kProcDirectory + to_string(pid) + "/" + kStatFilename  );
 
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
-    linestream >> _pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr >> tpgid >> flags >> minflt >> cminflt >> \
-               majflt >> cmajflt >> utime >> stime >> cutime >> cstime >> priority >> nice >> num_threads >> itrealvalue >> \
-               starttime >> vsize >> rss >> rsslim >> startcode >> endcode >> startstack >> kstkesp >> kstkeip >> signal >> \
-               blocked >> sigignore >> sigcatch >> wchain >> nswap >> cnswap >> exit_signal >> processor >> rt_priority >> \
-               policy >> delayacct_blkio_ticks >> guest_time >> cguest_time >> start_data >> end_data >> start_brk >> \
-               arg_start >> arg_end >> env_start >> env_end >> exit_code;
-
-    res = std::stof(starttime) / Hertz;
+    int counter = 1;
+    while (linestream >> token){
+      if (counter == 22){ //starttime
+        res =  UpTime() - ( std::stol(token) / sysconf(_SC_CLK_TCK) );
+        break;
+      }
+      counter ++;
+    }
   }
     
   return res;

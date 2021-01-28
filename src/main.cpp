@@ -3,16 +3,17 @@
 
 //Test includes
 #include "processor.h"
+#include "format.h"
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iomanip>
 using std::vector;
 using std::string;
 
 int main() {
   System system;
   NCursesDisplay::Display(system);
- 
 
 /*
 //Unit Test
@@ -31,11 +32,12 @@ case 3
 System s;
 vector<Process> v_process = s.Processes();
 for (auto p : v_process){
-  if (p.Pid() == 1000)
-    std::cout << p.Pid() << " " << p.UpTime() << "\n";
+  if (p.Pid() == 6051){
+    std::cout << "system uptime:" << s.UpTime() << "\n";
+    std::cout << "process uptime:" << p.Pid() << " " << p.UpTime() << "\n";
+    std::cout << "format:" << Format::ElapsedTime(p.UpTime()) << "\n";
+  }
 }
 */
-
-
 
 }
